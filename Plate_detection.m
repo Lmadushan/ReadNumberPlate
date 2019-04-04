@@ -1,12 +1,12 @@
 close all;
 clear all;
 
-ime = imread('Number Plate Images/1.jpeg');
-imgray = rgb2gray(ime);
+image = imread('Images/1.jpeg');
+imgray = rgb2gray(image);
 imbin =  im2bw(imgray);
 im = edge(imgray, 'prewitt');
 
-%Below steps are to find location of number plate
+
 Iprops = regionprops(im,'BoundingBox','Area', 'Image');
 area = Iprops.Area;
 count = numel(Iprops);
@@ -19,22 +19,16 @@ for i = 1:count
    end
 end    
 
-im = imcrop(imbin, boundingBox);%crop the number plate area
-im = bwareaopen(~im, 0.0005); %remove some object if it width is too long or too small than 500
+im = imcrop(imbin, boundingBox);
+im = bwareaopen(~im, 100);
+Ifill = imfill(im,'holes');
+B = bwboundaries(Ifill);
+stat = regionprops(Ifill,'Centroid');
 
- [h, w] = size(im);%get width
-
-imshow(im);
-
-Iprops=regionprops(im,'BoundingBox','Area', 'Image'); %read letter
-count = numel(Iprops);
-noPlate=[]; % Initializing the variable of number plate string.
-
-for i=1:count
-   ow = length(Iprops(i).Image(1,:));
-   oh = length(Iprops(i).Image(:,1));
-   if ow<(h/2) & oh>(h/3)
-       letter=Letter_detection(Iprops(i).Image); % Reading the letter corresponding the binary image 'N'.
-       noPlate=[noPlate letter] % Appending every subsequent character in noPlate variable.
-   end
+imshow(~im); hold on
+for k = 1 : length(B)
+    b = B{k};
+    c = stat(k).Centroid;
+    plot(b(:,2),b(:,1),'r','linewidth',2);
+    text(c(1),c(2),num2str(k),'backgroundcolor','r');
 end
