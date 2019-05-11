@@ -1,9 +1,9 @@
 close all;
 clear all;
 
-im = imread('Number Plate Images/image1.png');
+im = imread('Images/1.jpeg');
 imgray = rgb2gray(im);
-imbin = imbinarize(imgray);
+imbin = im2bw(imgray);
 im = edge(imgray, 'prewitt');
 
 %Below steps are to find location of number plate
